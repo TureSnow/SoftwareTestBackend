@@ -12,7 +12,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +65,7 @@ class LoanServiceImplTest {
         findRepayPlansByIouNum();
         canRepayFalse();
         getUnPayLoanAmount();
+        test1();
     }
     @Test
     void testUpdate(){
@@ -74,14 +77,78 @@ class LoanServiceImplTest {
         repayPartFail();
         repayAll();
         autoRepay();
+        findUnPayPlans2();
+        test2();
+        condition();
         after();
     }
+    @Test
+    void  condition(){
+        RepayPlan repayPlan=new RepayPlan();
+        repayPlan.setStatus(1);
+        repayPlan.setPlanDate(new Date());
+        Assert.assertTrue(loanService.condition(repayPlan));
+        repayPlan.setStatus(3);
+        Assert.assertFalse(loanService.condition(repayPlan));
+        repayPlan.setPlanDate(getTwoMonthAfter());
+        Assert.assertFalse(loanService.condition(repayPlan));
+        repayPlan.setStatus(1);
+        Assert.assertFalse(loanService.condition(repayPlan));
 
+        Assert.assertTrue(loanService.statusIsTwoOrOne(repayPlan));
+        repayPlan.setStatus(3);
+        Assert.assertFalse(loanService.statusIsTwoOrOne(repayPlan));
+        loanService.repayPart("L2104081553343",1000);
+
+    }
+    private Date getTwoMonthAfter() {
+        Date now = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String nowString = sdf.format(now);
+        Date dt = null;
+        dt = getDate(sdf, nowString, dt);
+        Calendar rightNow = Calendar.getInstance();
+        rightNow.setTime(dt);
+        rightNow.add(Calendar.MONTH, 2);
+        Date dt1 = rightNow.getTime();
+        return dt1;
+    }
+    public static Date getDate(SimpleDateFormat sdf, String nowString, Date dt) {
+        try {
+            dt = sdf.parse(nowString);
+        } catch (ParseException e) {
+            System.out.println(e.getMessage());
+        }
+        return dt;
+    }
     void findUnPayPlans() {
+
         List<RepayPlan> repayPlanList=loanService.findUnPayPlans("L2104081553341");
         for (RepayPlan repayPlan :repayPlanList) {
+
             Assert.assertNotEquals(3,repayPlan.getStatus().intValue());
         }
+    }
+    void test2(){
+        loanService.repayPart("L2104081553342",1000);
+
+        RepayPlan repayPlan=repayPlanMapper.selectByPrimaryKey(11);
+        repayPlan.setStatus(1);
+        repayPlanMapper.updateByPrimaryKey(repayPlan);
+        loanService.repayAll("L2104081553343");
+        repayPlan.setStatus(3);
+        repayPlanMapper.updateByPrimaryKey(repayPlan);
+
+        loanService.calculateALLRepayment("L2104081553341");
+        Assert.assertFalse(loanService.canRepayEnough("L2104081553341",0));
+        Assert.assertTrue(loanService.canRepayEnough("L2104081553341",10));
+    }
+    void test1(){
+        loanService.calculateALLRepayment("L2104081553341");
+    }
+    void findUnPayPlans2() {
+        List<RepayPlan> repayPlanList=loanService.findUnPayPlans("L2104081553341");
+        Assert.assertEquals(1,repayPlanList.size());
     }
 
     void findCustomerByIdNumber() {
@@ -197,6 +264,7 @@ class LoanServiceImplTest {
 
 
     void canRepayFalse(){
+        Assert.assertFalse(loanService.canRepayEnough("L2104081553342",100000000));
         Assert.assertFalse(loanService.canRepay("L2104081553342",100000000));
     }
 
