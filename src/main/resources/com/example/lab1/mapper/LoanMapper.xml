@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.lab1.dao.LoanMapper" >
+  <select id="getLoanByIouNum" resultType="Loan">
+    select * from loan where iou_num=#{iouNum}
+  </select>
+
+  <select id="getLoansByCustomerCode" resultType="Loan">
+    select * from loan where customer_code=#{customerCode}
+  </select>
+  <select id="getLoansByAccountNum" resultType="Loan">
+    select * from loan where account_num=#{accountNum}
+  </select>
+
+
+
+  <resultMap id="BaseResultMap" type="com.example.lab1.entity.Loan" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="iou_num" property="iouNum" jdbcType="VARCHAR" />
+    <result column="customer_code" property="customerCode" jdbcType="VARCHAR" />
+    <result column="account_num" property="accountNum" jdbcType="VARCHAR" />
+    <result column="yearly_rate" property="yearlyRate" jdbcType="DOUBLE" />
+    <result column="repayment_count" property="repaymentCount" jdbcType="INTEGER" />
+    <result column="due_date" property="dueDate" jdbcType="DATE" />
+    <result column="loan_date" property="loanDate" jdbcType="DATE" />
+    <result column="loan_cost" property="loanCost" jdbcType="DOUBLE" />
+    <result column="loan_amount" property="loanAmount" jdbcType="DOUBLE" />
+    <result column="product_code" property="productCode" jdbcType="VARCHAR" />
+    <result column="institution_account_num" property="institutionAccountNum" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, iou_num, customer_code, account_num, yearly_rate, repayment_count, due_date, 
+    loan_date, loan_cost, loan_amount, product_code, institution_account_num, name
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.example.lab1.entity.LoanExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from loan
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from loan
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from loan
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.example.lab1.entity.LoanExample" >
+    delete from loan
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.example.lab1.entity.Loan" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into loan (iou_num, customer_code, account_num, 
+      yearly_rate, repayment_count, due_date, 
+      loan_date, loan_cost, loan_amount, 
+      product_code, institution_account_num, name
+      )
+    values (#{iouNum,jdbcType=VARCHAR}, #{customerCode,jdbcType=VARCHAR}, #{accountNum,jdbcType=VARCHAR}, 
+      #{yearlyRate,jdbcType=DOUBLE}, #{repaymentCount,jdbcType=INTEGER}, #{dueDate,jdbcType=DATE}, 
+      #{loanDate,jdbcType=DATE}, #{loanCost,jdbcType=DOUBLE}, #{loanAmount,jdbcType=DOUBLE}, 
+      #{productCode,jdbcType=VARCHAR}, #{institutionAccountNum,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.example.lab1.entity.Loan" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into loan
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="iouNum != null" >
+        iou_num,
+      </if>
+      <if test="customerCode != null" >
+        customer_code,
+      </if>
+      <if test="accountNum != null" >
+        account_num,
+      </if>
+      <if test="yearlyRate != null" >
+        yearly_rate,
+      </if>
+      <if test="repaymentCount != null" >
+        repayment_count,
+      </if>
+      <if test="dueDate != null" >
+        due_date,
+      </if>
+      <if test="loanDate != null" >
+        loan_date,
+      </if>
+      <if test="loanCost != null" >
+        loan_cost,
+      </if>
+      <if test="loanAmount != null" >
+        loan_amount,
+      </if>
+      <if test="productCode != null" >
+        product_code,
+      </if>
+      <if test="institutionAccountNum != null" >
+        institution_account_num,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="iouNum != null" >
+        #{iouNum,jdbcType=VARCHAR},
+      </if>
+      <if test="customerCode != null" >
+        #{customerCode,jdbcType=VARCHAR},
+      </if>
+      <if test="accountNum != null" >
+        #{accountNum,jdbcType=VARCHAR},
+      </if>
+      <if test="yearlyRate != null" >
+        #{yearlyRate,jdbcType=DOUBLE},
+      </if>
+      <if test="repaymentCount != null" >
+        #{repaymentCount,jdbcType=INTEGER},
+      </if>
+      <if test="dueDate != null" >
+        #{dueDate,jdbcType=DATE},
+      </if>
+      <if test="loanDate != null" >
+        #{loanDate,jdbcType=DATE},
+      </if>
+      <if test="loanCost != null" >
+        #{loanCost,jdbcType=DOUBLE},
+      </if>
+      <if test="loanAmount != null" >
+        #{loanAmount,jdbcType=DOUBLE},
+      </if>
+      <if test="productCode != null" >
+        #{productCode,jdbcType=VARCHAR},
+      </if>
+      <if test="institutionAccountNum != null" >
+        #{institutionAccountNum,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.example.lab1.entity.LoanExample" resultType="java.lang.Integer" >
+    select count(*) from loan
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update loan
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.iouNum != null" >
+        iou_num = #{record.iouNum,jdbcType=VARCHAR},
+      </if>
+      <if test="record.customerCode != null" >
+        customer_code = #{record.customerCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.accountNum != null" >
+        account_num = #{record.accountNum,jdbcType=VARCHAR},
+      </if>
+      <if test="record.yearlyRate != null" >
+        yearly_rate = #{record.yearlyRate,jdbcType=DOUBLE},
+      </if>
+      <if test="record.repaymentCount != null" >
+        repayment_count = #{record.repaymentCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.dueDate != null" >
+        due_date = #{record.dueDate,jdbcType=DATE},
+      </if>
+      <if test="record.loanDate != null" >
+        loan_date = #{record.loanDate,jdbcType=DATE},
+      </if>
+      <if test="record.loanCost != null" >
+        loan_cost = #{record.loanCost,jdbcType=DOUBLE},
+      </if>
+      <if test="record.loanAmount != null" >
+        loan_amount = #{record.loanAmount,jdbcType=DOUBLE},
+      </if>
+      <if test="record.productCode != null" >
+        product_code = #{record.productCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.institutionAccountNum != null" >
+        institution_account_num = #{record.institutionAccountNum,jdbcType=VARCHAR},
+      </if>
+      <if test="record.name != null" >
+        name = #{record.name,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update loan
+    set id = #{record.id,jdbcType=INTEGER},
+      iou_num = #{record.iouNum,jdbcType=VARCHAR},
+      customer_code = #{record.customerCode,jdbcType=VARCHAR},
+      account_num = #{record.accountNum,jdbcType=VARCHAR},
+      yearly_rate = #{record.yearlyRate,jdbcType=DOUBLE},
+      repayment_count = #{record.repaymentCount,jdbcType=INTEGER},
+      due_date = #{record.dueDate,jdbcType=DATE},
+      loan_date = #{record.loanDate,jdbcType=DATE},
+      loan_cost = #{record.loanCost,jdbcType=DOUBLE},
+      loan_amount = #{record.loanAmount,jdbcType=DOUBLE},
+      product_code = #{record.productCode,jdbcType=VARCHAR},
+      institution_account_num = #{record.institutionAccountNum,jdbcType=VARCHAR},
+      name = #{record.name,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.example.lab1.entity.Loan" >
+    update loan
+    <set >
+      <if test="iouNum != null" >
+        iou_num = #{iouNum,jdbcType=VARCHAR},
+      </if>
+      <if test="customerCode != null" >
+        customer_code = #{customerCode,jdbcType=VARCHAR},
+      </if>
+      <if test="accountNum != null" >
+        account_num = #{accountNum,jdbcType=VARCHAR},
+      </if>
+      <if test="yearlyRate != null" >
+        yearly_rate = #{yearlyRate,jdbcType=DOUBLE},
+      </if>
+      <if test="repaymentCount != null" >
+        repayment_count = #{repaymentCount,jdbcType=INTEGER},
+      </if>
+      <if test="dueDate != null" >
+        due_date = #{dueDate,jdbcType=DATE},
+      </if>
+      <if test="loanDate != null" >
+        loan_date = #{loanDate,jdbcType=DATE},
+      </if>
+      <if test="loanCost != null" >
+        loan_cost = #{loanCost,jdbcType=DOUBLE},
+      </if>
+      <if test="loanAmount != null" >
+        loan_amount = #{loanAmount,jdbcType=DOUBLE},
+      </if>
+      <if test="productCode != null" >
+        product_code = #{productCode,jdbcType=VARCHAR},
+      </if>
+      <if test="institutionAccountNum != null" >
+        institution_account_num = #{institutionAccountNum,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.example.lab1.entity.Loan" >
+    update loan
+    set iou_num = #{iouNum,jdbcType=VARCHAR},
+      customer_code = #{customerCode,jdbcType=VARCHAR},
+      account_num = #{accountNum,jdbcType=VARCHAR},
+      yearly_rate = #{yearlyRate,jdbcType=DOUBLE},
+      repayment_count = #{repaymentCount,jdbcType=INTEGER},
+      due_date = #{dueDate,jdbcType=DATE},
+      loan_date = #{loanDate,jdbcType=DATE},
+      loan_cost = #{loanCost,jdbcType=DOUBLE},
+      loan_amount = #{loanAmount,jdbcType=DOUBLE},
+      product_code = #{productCode,jdbcType=VARCHAR},
+      institution_account_num = #{institutionAccountNum,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
