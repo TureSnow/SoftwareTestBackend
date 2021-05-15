@@ -109,7 +109,7 @@ public class ProductServiceImpl implements ProductService {
         if (!checkCustomerAndCard(customerCode,idNumber,accountNum,password))
             return -1;
         int lv=getAccountLv(accountNum);
-        if(lv!=2&&lv!=1)
+        if(lv>=3)
             return 0;
         //先归还罚金
         loanServiceImpl.payFineOfCard(accountNum);
@@ -402,24 +402,7 @@ public class ProductServiceImpl implements ProductService {
 
 
 
-    @Override
-    public double queryStockPriceInTime(String stockCode, Date time) {
-        List<StockPriceTime> stockPriceTimes = this.queryStockPriceByStockCode(stockCode);
-        if (stockPriceTimes.size()==0)
-            return -1;
-        double price=0;
-        for(int i=stockPriceTimes.size()-1;i>=0;i--){
-            StockPriceTime priceTime = stockPriceTimes.get(i);
-            if(time.after(priceTime.getTime())){
-                //找到第一个在给定时间之前（最新）的价格
-                //date: 2.10   2.9    2.8
-                //price:8.89   23.0   8.82
-                price=priceTime.getPrice();
-                break;
-            }
-        }
-        return price;
-    }
+
 
     @Override
     public List<MyStock> queryStockByCustomerCode(String customerCode) {

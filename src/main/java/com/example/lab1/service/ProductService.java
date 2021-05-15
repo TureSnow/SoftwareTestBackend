@@ -116,13 +116,7 @@ public interface ProductService {
      * @return
      */
     List<StockPriceTime> queryStockPriceByStockCode(String stockCode);
-    /**
-     * 查询精准时间内的某一只股票的价格
-     * @param stockCode
-     * @param time
-     * @return
-     */
-    double queryStockPriceInTime(String stockCode, Date time);
+
     /**
      * 查询用户购买的股票,如果该股票没有持仓也要返回
      * @param customerCode

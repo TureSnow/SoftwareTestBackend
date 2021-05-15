@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -33,7 +34,6 @@ class ProductServiceImplTest {
         getStockNowAccount();
         sellStock();
         queryStockPriceByStockCode();
-        queryStockPriceInTime();
         queryStockByCustomerCode();
         merge();
         queryStockBuyByCustomerCode();
@@ -254,12 +254,6 @@ class ProductServiceImplTest {
     void queryStockPriceByStockCode() {
         assertNotNull(productService.queryStockPriceByStockCode("GP01"));
         assertEquals(0,productService.queryStockPriceByStockCode("test").size());
-    }
-
-     
-    void queryStockPriceInTime() {
-        assertEquals(-1,productService.queryStockPriceInTime("test",new Date()));
-        assertEquals(90.9,productService.queryStockPriceInTime("GP01",new Date()));
     }
 
      
